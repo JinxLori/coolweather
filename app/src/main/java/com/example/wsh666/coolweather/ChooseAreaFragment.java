@@ -13,7 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.wsh666.coolweather.db.City;
-import com.example.wsh666.coolweather.db.Country;
+import com.example.wsh666.coolweather.db.County;
 import com.example.wsh666.coolweather.db.Province;
 import com.example.wsh666.coolweather.util.HttpUtil;
 import com.example.wsh666.coolweather.util.Utility;
@@ -44,7 +44,7 @@ public class ChooseAreaFragment extends Fragment {
 //    市列表
     private List<City> cityList;
 //    县列表
-    private List<Country> countryList;
+    private List<County> countyList;
 //    选中的省份
     private Province selectedProvince;
 //    选中的市
@@ -135,11 +135,11 @@ public class ChooseAreaFragment extends Fragment {
     public void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countryList= DataSupport.where("cityid=?",String.valueOf(selectedCity.getId())).find(Country.class);
-        if(countryList.size()>0){
+        countyList= DataSupport.where("cityid=?",String.valueOf(selectedCity.getId())).find(County.class);
+        if(countyList.size()>0){
             dataList.clear();
-            for(Country country:countryList){
-                dataList.add(country.getCountryName());
+            for(County county:countyList){
+                dataList.add(county.getCountyName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);

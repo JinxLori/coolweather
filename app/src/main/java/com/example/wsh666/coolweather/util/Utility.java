@@ -3,7 +3,7 @@ package com.example.wsh666.coolweather.util;
 import android.text.TextUtils;
 
 import com.example.wsh666.coolweather.db.City;
-import com.example.wsh666.coolweather.db.Country;
+import com.example.wsh666.coolweather.db.County;
 import com.example.wsh666.coolweather.db.Province;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,8 +62,8 @@ public class Utility {
                 JSONArray allCounties = new JSONArray(response);
                 for(int i=0;i<allCounties.length();i++){
                     JSONObject countryObject=allCounties.getJSONObject(i);
-                    Country country=new Country();
-                    country.setCountryName(countryObject.getString("name"));
+                    County country=new County();
+                    country.setCountyName(countryObject.getString("name"));
                     country.setWeatherId(countryObject.getString("weather_id"));
                     country.setCityId(cityId);
                     country.save();
