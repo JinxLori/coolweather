@@ -36,7 +36,7 @@ public class Country extends DataSupport {
         this.cityId = cityId;
     }
 
-    public void setCountyrName(String countryName) {
+    public void setCountryName(String countryName) {
         this.countryName = countryName;
     }
 
