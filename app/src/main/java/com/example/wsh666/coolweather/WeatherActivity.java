@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.wsh666.coolweather.gson.Basic;
 import com.example.wsh666.coolweather.gson.Forecast;
 import com.example.wsh666.coolweather.gson.Weather;
@@ -28,6 +30,7 @@ import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
+    private ImageView bingPicImg;
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -45,6 +48,7 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 //        初始化各控件
+        bingPicImg=(ImageView)findViewById(R.id.bing_pic_img);
         weatherLayout=(ScrollView)findViewById(R.id.weather_layout);
         titleCity=(TextView)findViewById(R.id.title_city);
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
@@ -70,6 +74,13 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
 //            请求服务器获取天气信息
             requestWeather(weatherId);
+        }
+//        看有没有图片缓存
+        String bingPic = prefs.getString("bing_pic",null);
+        if(bingPic!=null){
+            Glide.with(this).load(bingPic).into(bingPicImg);
+        }else{
+            loadBingPic();
         }
     }
 //根据天气id请求城市天气信息
@@ -108,6 +119,8 @@ public class WeatherActivity extends AppCompatActivity {
 
             }
         });
+//        加载图片
+        loadBingPic();
     }
 //处理并且展示Weather实体类中的数据
     public void showWeatherInfo(Weather weather){
@@ -117,7 +130,7 @@ public class WeatherActivity extends AppCompatActivity {
         String degree=weather.now.temprature+"℃";
         String weatherInfo = weather.now.more.info;
         titleCity.setText(cityName);
-        titleUpdateTime.setText(updateTime);
+        titleUpdateTime.setText("发布时间："+updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
@@ -145,5 +158,30 @@ public class WeatherActivity extends AppCompatActivity {
         sportText.setText(sport);
 //        天气信息输出完成 显示天气界面
         weatherLayout.setVisibility(View.VISIBLE);
+    }
+
+//    从服务器加载背景图
+    private void loadBingPic(){
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic",bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(bingPicImg);
+                    }
+                });
+            }
+        });
     }
 }
